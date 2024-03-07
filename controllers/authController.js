@@ -86,7 +86,7 @@ const getUserById = async (req, res) =>{
         const user = await User.findById(userId);
         res.json(user);
     } catch (err) {
-        res.status(404).json({ message: 'Product not found' });
+        res.status(404).json({ message: 'User not found' });
     }
 }
 
