@@ -44,15 +44,64 @@ const createSeller = async (req,res) => {
 
 
 const getSeller = async (req,res) => {
+    try {
+        // Fetch all products from the database
+        const seller = await sellerProfile.find()
 
+        res.status(200).json(seller);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
+const getSellerById = async (req,res) =>{
+    try {
+        const sellerId = req.params.id;
+        const seller = await sellerProfile.findById(sellerId);
+        res.json(seller);
+    } catch (err) {
+        res.status(404).json({ message: 'seller not found' });
+    }
 }
 
 const updateSeller = async (req,res) => {
+    try {
+        const sellerId = req.params.id;
+        const updates = req.body;
 
+        console.log(updates);
+
+        const seller = await sellerProfile.findByIdAndUpdate(sellerId, updates, { new: true });
+
+        if (!seller) {
+            return res.status(404).json({ error: 'seller not found' });
+        }
+
+        res.status(200).json(seller);
+    } catch (err) {
+        // console.error(error);
+        // res.status(500).json({ error: 'Server error' });
+        res.status(400).json({ message: err.message });
+    }
 }
 
 const deleteSeller = async (req,res) => {
+    try {
+        const sellerId = req.params.id;
 
+        const seller = await sellerProfile.findByIdAndDelete(sellerId);
+
+        if (!seller) {
+            return res.status(404).json({ error: 'Seller not found' });
+        }
+
+        res.status(200).json({ message: 'seller Profile deleted successfully' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+        // res.status(404).json({ message: 'Product not found' });
+    }
 }
 
 const sellerLogin = async (req,res) =>{
@@ -110,6 +159,7 @@ const generateAccessToken = (data) => {
 module.exports = {
     createSeller,
     getSeller,
+    getSellerById,
     updateSeller,
     deleteSeller,
     sellerLogin

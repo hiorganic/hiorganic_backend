@@ -115,6 +115,28 @@ const userProfileSchema = new Schema({
 });
 
 
+const cartSchema = new mongoose.Schema({
+    user: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref:'User',
+        required: true 
+    },
+    products: [
+        { 
+            productId:{
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: 'Product'
+            },
+            quantity: {
+                type: Number,
+                default: 1
+            }
+        }
+    ]
+});
+
+
+
 
 
 
@@ -122,6 +144,7 @@ const Category = mongoose.model('Category', categorySchema);
 const sellerProfile = mongoose.model('sellerProfile', sellerProfileSchema);
 const Product = mongoose.model('Product', productSchema);
 const User = mongoose.model('User', userProfileSchema);
+const Cart = mongoose.model('Cart', cartSchema)
 
 
-module.exports = {Category, sellerProfile, Product, User}
+module.exports = {Category, sellerProfile, Product, User,Cart}

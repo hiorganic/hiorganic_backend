@@ -5,6 +5,7 @@ const dbConnect = require("./dbConnect");
 const productRouter = require("./routers/productsRouter.js");
 const userRouter = require("./routers/userRouter");
 const sellerRouter = require("./routers/sellerRouter.js")
+const cartRouter = require("./routers/cartRouter.js")
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 // const cors = require("cors");
@@ -33,6 +34,7 @@ app.use(cookieParser());
 app.use("/products", productRouter);    
 app.use("/user", userRouter);
 app.use("/seller", sellerRouter);
+app.use("/cart", cartRouter);
 
 app.get("/", (req, res) => {
     res.status(200).send("OK from Server");

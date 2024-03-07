@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const {User} = require("../models/Schema");
+const {sellerProfile} = require("../models/Schema");
 
 
 module.exports = async (req, res, next) => {
@@ -20,8 +20,8 @@ module.exports = async (req, res, next) => {
         );
         req._id = decoded._id;
         
-         
-        const user = await User.findById(req._id);
+        const user = await sellerProfile.findById(req._id);
+        
 
         if(!user) {
         return res.status(401).send("User not found");
