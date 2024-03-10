@@ -21,8 +21,22 @@ const additem = async(req,res) =>{
     let productCart
 
     if(existingCart){
-        existingCart._doc.products.push({productId:productid,quantity:quantity})
-        await existingCart.save()
+        let existingProduct = false
+        for(i = 0 ;i<= existingCart._doc.products.length; i++){
+            if (existingCart._doc.products[i]._doc.productId == productid){
+                console.log(existingCart._doc.products[i]);
+                // existingCart._doc.products[i]._doc.quantity = quantity
+                existingCart.products[i].quantity = quantity
+                await existingCart.save()
+                existingProduct = true
+                break;
+            }
+        }
+        if(existingProduct === false){
+            existingCart._doc.products.push({productId:productid,quantity:quantity})
+            await existingCart.save()
+        }
+        
     }
 
     else{
@@ -109,15 +123,53 @@ const updateCartProductById = async (req,res) =>{
 
 const deleteCart = async (req,res) => {
     try {
-        const cartId = req.params.id;
+        const userId = req._id;
+        const productId = req.params.id;
 
-        const product = await Product.findByIdAndDelete(cartId);
+        const cart = await Cart.findOne({ user:userId})
 
-        if (!product) {
-            return res.status(404).json({ error: 'Cart not found' });
+        if (!cart) {
+            return res.status(404).send('Cart not found for the user');
+        }
+        let productIndex
+        for(i = 0 ;i<=cart.products.length;i++){
+            console.log(cart.products[i]._doc.productId === productId);
+            productIndex = i
+            break;
         }
 
-        res.status(200).json({ message: 'Cart deleted successfully' });
+        if (productIndex === -1) {
+            return res.status(404).send('Product not found in the cart');
+        }
+
+        cart.products.splice(productIndex, 1);
+        await cart.save();
+
+
+        // const productIndex = cart.products.findIndex(product => product === productId);
+
+        
+
+        // const productIndex = cart._doc.products.findIndex(product => product.productId === productId);
+        // const updatedCart = await Cart.findOneAndDelete(
+        //     { user: userId, "products.productId": productId }
+        // );
+
+        // console.log(productIndex);
+
+        // if (productIndex === -1) {
+        //     return res.status(404).send('Product not found in the cart');
+        // }
+
+        // cart.products.splice(productIndex, 1);
+        // await cart.save();
+
+        // const product = await Product.findByIdAndDelete(cartId);
+        // if (!product) {
+        //     return res.status(404).json({ error: 'Cart not found' });
+        // }
+
+        res.status(200).json({ message: 'Cart Product deleted successfully' });
 
     } catch (error) {
         console.error(error);
