@@ -81,18 +81,25 @@ const getProductById = async (req,res) =>{
 
 const updateCartProductById = async (req,res) =>{
     try {
+
+        const userId = req._id;
         const productId = req.params.id;
-        const updates = req.body;
+        const {quantity} = req.body;
 
-        console.log(updates);
+        const cart = await Cart.findOne({ user:userId})
+        console.log(cart);
 
-        const product = await Cart.findByIdAndUpdate(productId, updates, { new: true });
+        const updatedCart = await Cart.findOneAndUpdate(
+            { user: userId, "products.productId": productId },
+            { $set: { "products.$.quantity": quantity } },
+            { new: true }
+        );
 
-        if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
+        if (!updatedCart) {
+            return res.status(404).send('Product or user not found in the cart');
         }
 
-        res.status(200).json(product);
+        res.status(200).json(updatedCart);
     } catch (err) {
         // console.error(error);
         // res.status(500).json({ error: 'Server error' });
@@ -100,22 +107,21 @@ const updateCartProductById = async (req,res) =>{
     }
 }
 
-const deleteProduct = async (req,res) => {
+const deleteCart = async (req,res) => {
     try {
-        const productId = req.params.id;
+        const cartId = req.params.id;
 
-        const product = await Product.findByIdAndDelete(productId);
+        const product = await Product.findByIdAndDelete(cartId);
 
         if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
+            return res.status(404).json({ error: 'Cart not found' });
         }
 
-        res.status(200).json({ message: 'Product deleted successfully' });
+        res.status(200).json({ message: 'Cart deleted successfully' });
 
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error' });
-        // res.status(404).json({ message: 'Product not found' });
     }
 }
 
@@ -125,5 +131,5 @@ module.exports={
     getCartProduct,
     getProductById,
     updateCartProductById,
-    deleteProduct
+    deleteCart
 }
